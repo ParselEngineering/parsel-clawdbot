@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "robin": {
+      "description": "Robin shipping tracking and label management API",
+      "baseUrl": "https://api.parsel.app/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ROBIN_API_KEY}"
+      }
+    },
+    "datadog": {
+      "description": "Datadog monitoring — logs, metrics, traces, incidents",
+      "command": "npx",
+      "args": ["-y", "@winor30/mcp-server-datadog"],
+      "env": {
+        "DATADOG_API_KEY": "${DD_API_KEY}",
+        "DATADOG_APP_KEY": "${DD_APPLICATION_KEY}",
+        "DATADOG_SITE": "us5.datadoghq.com"
+      }
+    },
+    "appsignal": {
+      "description": "AppSignal APM — errors, performance, anomalies",
+      "command": "npx",
+      "args": ["-y", "@appsignal/mcp"],
+      "env": {
+        "APPSIGNAL_API_KEY": "${APPSIGNAL_MCP_TOKEN}"
+      }
+    }
+  },
+  "imports": []
+}

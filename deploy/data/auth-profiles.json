@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "profiles": {
+    "openrouter:default": {
+      "type": "api_key",
+      "provider": "openrouter"
+    }
+  }
+}

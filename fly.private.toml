@@ -9,8 +9,8 @@
 #
 # See https://fly.io/docs/reference/configuration/
 
-app = "my-openclaw" # change to your app name
-primary_region = "iad" # change to your closest region
+app = "parsel-clawdbot" # change to your app name
+primary_region = "ord"  # change to your closest region
 
 [build]
 dockerfile = "Dockerfile"
@@ -35,5 +35,5 @@ size = "shared-cpu-2x"
 memory = "2048mb"
 
 [mounts]
-source = "openclaw_data"
+source = "parselclawdbot_data"
 destination = "/data"

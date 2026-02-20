@@ -1,0 +1,82 @@
+{
+  "meta": { "lastTouchedVersion": "2026.2.20" },
+  "auth": {
+    "profiles": {
+      "openrouter:default": { "provider": "openrouter", "mode": "api_key" }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter/anthropic/claude-sonnet-4.5",
+        "fallbacks": ["openrouter/google/gemini-2.0-flash:free"]
+      },
+      "models": {
+        "openrouter/anthropic/claude-sonnet-4.5": { "alias": "sonnet" },
+        "openrouter/anthropic/claude-opus-4.6": { "alias": "opus" },
+        "openrouter/google/gemini-2.0-flash:free": { "alias": "flash" }
+      },
+      "workspace": "/data/workspace",
+      "compaction": { "mode": "safeguard" },
+      "maxConcurrent": 4,
+      "subagents": { "maxConcurrent": 8 }
+    }
+  },
+  "tools": {
+    "exec": { "pathPrepend": ["/data/bin"] },
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "perplexity",
+        "perplexity": {
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "model": "perplexity/sonar-pro"
+        }
+      },
+      "fetch": {
+        "enabled": true
+      }
+    }
+  },
+  "messages": { "ackReactionScope": "group-mentions" },
+  "commands": { "native": "auto", "nativeSkills": "auto", "restart": true },
+  "channels": {
+    "telegram": {
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
+      "groupPolicy": "open",
+      "streamMode": "partial",
+      "actions": { "reactions": true, "sendMessage": true, "deleteMessage": true, "sticker": true }
+    },
+    "slack": {
+      "mode": "socket",
+      "groupPolicy": "allowlist",
+      "ackReaction": "eyes",
+      "channels": {
+        "C08CTEK0DA4": {
+          "enabled": true,
+          "allowBots": true,
+          "requireMention": false,
+          "systemPrompt": "You are the WISMO Tracking Triage Autopilot. Every message here is an Atlas.so support ticket about a shipping issue. Follow your WISMO skill to investigate and respond in-thread. Never ask clarifying questions — investigate proactively using the Robin tracking API."
+        },
+        "C0A9RELEHUK": {
+          "enabled": true,
+          "allowBots": false,
+          "requireMention": false
+        },
+        "C08FPFHJTKQ": {
+          "enabled": true,
+          "allowBots": true,
+          "requireMention": false,
+          "systemPrompt": "You are the Production Debugger — an incident triage autopilot. Every message here is a monitoring alert from Datadog or AppSignal about our Elixir or Golang production services. Follow your debugger skill to investigate using Datadog, AppSignal, and GCP logs via mcporter, then post a structured triage summary in-thread. Classify severity, identify root cause, and recommend actions. Never ask clarifying questions — investigate proactively."
+        }
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true },
+      "slack": { "enabled": true }
+    }
+  }
+}
