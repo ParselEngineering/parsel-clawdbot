@@ -36,11 +36,11 @@ Scan the ticket subject and message body for WISMO signals:
 
 **If WISMO** — the ticket contains tracking numbers OR shipping/delivery keywords → proceed to Step 1.
 
-**If NOT WISMO** — the ticket is about billing, product questions, account issues, returns (non-shipping), or other topics → **stop here**. Reply in-thread:
+**If NOT WISMO** — the ticket is about billing, product questions, account issues, returns (non-shipping), or other topics → **stop immediately**. Post exactly one short message in-thread:
 
-> This ticket does not appear to be a shipping or tracking issue, so automated WISMO triage does not apply. This ticket requires manual review by the support team.
+> Not a WISMO ticket — skipping automated triage.
 
-Do NOT proceed to the remaining steps or call the Robin API.
+Then STOP. Do not send any additional messages, do not elaborate, do not call the Robin API, and do not proceed to any further steps. Your turn is done.
 
 ---
 
