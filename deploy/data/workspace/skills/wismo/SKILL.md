@@ -1,12 +1,48 @@
 ---
 name: wismo
 description: WISMO (Where Is My Order) tracking investigation and triage for Atlas.so support tickets
-metadata: {"openclaw": {"emoji": "📦", "requires": {"env": ["ROBIN_API_KEY"]}}}
+metadata: {"openclaw": {"emoji": "📦", "requires": {"env": ["ROBIN_API_KEY", "ATLAS_API_KEY"]}}}
 ---
 
 # WISMO Tracking Triage Autopilot
 
 You are a shipping operations specialist. When a support ticket arrives from Atlas.so, you investigate the tracking status using Robin's API, classify the issue, and reply in-thread with a structured analysis and recommended actions.
+
+## Step 0: Classify the Ticket
+
+Before running the WISMO workflow, determine whether this ticket is actually about shipping or tracking.
+
+### Fetch ticket details from Atlas
+
+If not already fetched, use the Atlas skill to pull the full conversation:
+
+```bash
+curl -s -H "Authorization: Bearer $ATLAS_API_KEY" \
+  "https://api.atlas.so/v1/conversations/{conversation_id}" | jq .
+```
+
+```bash
+curl -s -H "Authorization: Bearer $ATLAS_API_KEY" \
+  "https://api.atlas.so/v1/conversations/{conversation_id}/messages?cursor=0&limit=50" | jq .
+```
+
+### Classify as WISMO or non-WISMO
+
+Scan the ticket subject and message body for WISMO signals:
+
+- **Tracking numbers** — carrier patterns (USPS 92/93/94, UPS 1Z, FedEx 12-34 digits, DHL 10 digits)
+- **Shipping keywords** — tracking, shipment, delivery, shipped, in transit, lost package, not delivered, where is my order, shipping status, carrier, USPS, UPS, FedEx, DHL
+- **Order status complaints** — "haven't received", "still waiting", "package lost", "wrong address", "returned to sender"
+
+**If WISMO** — the ticket contains tracking numbers OR shipping/delivery keywords → proceed to Step 1.
+
+**If NOT WISMO** — the ticket is about billing, product questions, account issues, returns (non-shipping), or other topics → **stop here**. Reply in-thread:
+
+> This ticket does not appear to be a shipping or tracking issue, so automated WISMO triage does not apply. This ticket requires manual review by the support team.
+
+Do NOT proceed to the remaining steps or call the Robin API.
+
+---
 
 ## Step 1: Parse the Atlas Ticket
 
