@@ -28,13 +28,14 @@ curl -s -H "Authorization: Bearer $ATLAS_API_KEY" \
 
 ### Classify as WISMO or non-WISMO
 
-Scan the ticket subject and message body for WISMO signals:
+The primary signal is the **`started on page`** property from the Atlas conversation. This tells you which page the customer was on when they opened the ticket.
 
-- **Tracking numbers** — carrier patterns (USPS 92/93/94, UPS 1Z, FedEx 12-34 digits, DHL 10 digits)
-- **Shipping keywords** — tracking, shipment, delivery, shipped, in transit, lost package, not delivered, where is my order, shipping status, carrier, USPS, UPS, FedEx, DHL
-- **Order status complaints** — "haven't received", "still waiting", "package lost", "wrong address", "returned to sender"
+- **If `started on page` contains `parsel.app/tracking`** → this is a WISMO ticket. The URL may also contain a `code=` parameter with the tracking code (e.g., `https://parsel.app/tracking?code=UUS62E7550090153614`). Extract the tracking code from the URL if present.
+- **If `started on page` does NOT contain `parsel.app/tracking`** → this is NOT a WISMO ticket. The customer opened the ticket from a different page in the app (e.g., orders, account, billing).
 
-**If WISMO** — the ticket contains tracking numbers OR shipping/delivery keywords → proceed to Step 1.
+This is the definitive check. Do not rely on keyword matching alone — always use `started on page` first.
+
+**If WISMO** (started on tracking page) → proceed to Step 1.
 
 **If NOT WISMO** — the ticket is about billing, product questions, account issues, returns (non-shipping), or other topics → **stop immediately**. Post exactly one short message in-thread:
 
