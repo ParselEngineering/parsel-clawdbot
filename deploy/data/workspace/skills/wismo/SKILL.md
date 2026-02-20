@@ -45,21 +45,44 @@ Then STOP. Do not send any additional messages, do not elaborate, do not call th
 
 ---
 
-## Step 1: Parse the Atlas Ticket
+## Step 1: Extract Tracking Code from Atlas
 
-Extract from the incoming message:
+The Slack message itself rarely contains the tracking code. You MUST use the Atlas.so API to find it. Check these sources in order:
 
-- **Tracking code** — look for these carrier patterns:
-  - USPS: starts with 92/93/94, 20-34 digits
-  - UPS: starts with 1Z followed by alphanumeric (18 chars total)
-  - FedEx: 12-34 digit numbers, or starts with 6/7 (12-15 digits)
-  - DHL: 10-digit numbers or JD followed by digits
-  - General: any string explicitly labeled "tracking" or "tracking number"
+### 1a. Extract from `started on page` URL (most reliable)
+
+The Atlas conversation's `started on page` property contains the page the customer was on. For WISMO tickets this is the tracking page URL:
+
+```
+https://parsel.app/tracking?code=UUS62E7550090153614
+```
+
+Extract the tracking code from the `code=` query parameter. This is the most reliable source.
+
+### 1b. Search conversation messages
+
+If the tracking code is not in the URL, fetch the conversation messages:
+
+```bash
+curl -s -H "Authorization: Bearer $ATLAS_API_KEY" \
+  "https://api.atlas.so/v1/conversations/{conversation_id}/messages?cursor=0&limit=50" | jq .
+```
+
+Scan the message bodies for tracking code patterns:
+- USPS: starts with 92/93/94, 20-34 digits
+- UPS: starts with 1Z followed by alphanumeric (18 chars total)
+- FedEx: 12-34 digit numbers, or starts with 6/7 (12-15 digits)
+- DHL: 10-digit numbers or JD followed by digits
+- General: any string explicitly labeled "tracking" or "tracking number"
+
+### 1c. Extract additional context
+
+Also extract from the Atlas conversation data:
 - **Order number** — patterns like #NNNN, ORD-XXXX, order XXXX
-- **Customer name and email** — from ticket metadata
-- **Customer's complaint** — the actual message body
+- **Customer name and email** — from conversation/customer metadata
+- **Customer's complaint** — the message body text
 
-If no tracking code is found, reply acknowledging the ticket and note that a tracking code is needed to investigate.
+If no tracking code is found after checking both the URL and messages, reply acknowledging the ticket and note that a tracking code is needed to investigate.
 
 ## Step 2: Investigate via Robin MCP
 
